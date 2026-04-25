@@ -20,23 +20,14 @@ import java.util.*;
 
 import ghidra.app.util.Option;
 import ghidra.app.util.bin.ByteProvider;
-import ghidra.app.util.importer.MemoryConflictHandler;
-import ghidra.app.util.importer.MessageLog;
 import ghidra.app.util.opinion.AbstractLibrarySupportLoader;
 import ghidra.app.util.opinion.LoadSpec;
-import ghidra.app.util.opinion.QueryOpinionService;
-import ghidra.app.util.opinion.QueryResult;
+import ghidra.app.util.opinion.Loader.ImporterSettings;
 import ghidra.framework.model.DomainObject;
 import ghidra.program.model.listing.Program;
 import ghidra.util.exception.CancelledException;
-import ghidra.util.task.TaskMonitor;
 
-/**
- * TODO: Provide class-level documentation that describes what this loader does.
- */
 public class RX62TLoader extends AbstractLibrarySupportLoader {
-	
-	final static String MACHINE = "RX62T";
 
 	@Override
 	public String getName() {
@@ -49,41 +40,28 @@ public class RX62TLoader extends AbstractLibrarySupportLoader {
 
 	@Override
 	public Collection<LoadSpec> findSupportedLoadSpecs(ByteProvider provider) throws IOException {
-		List<LoadSpec> loadSpecs = new ArrayList<>();
-
-		// TODO: Examine the bytes in 'provider' to determine if this loader can load it.  If it 
-		// can load it, return the appropriate load specifications.
-		List<QueryResult> queryResults = QueryOpinionService.query(getName(), MACHINE, null);
-
-		return loadSpecs;
+		// RX62T support is provided primarily via language definitions (.ldefs/.pspec/.sla).
+		// Keep loader passive unless concrete file-format loading is implemented.
+		return Collections.emptyList();
 	}
 
 	@Override
-	protected void load(ByteProvider provider, LoadSpec loadSpec, List<Option> options,
-			Program program, MemoryConflictHandler handler, TaskMonitor monitor, MessageLog log)
+	protected void load(Program program, ImporterSettings settings)
 			throws CancelledException, IOException {
 
-		// TODO: Load the bytes from 'provider' into the 'program'.
+		// Intentionally no-op for now. RX62T language support is provided via SLEIGH specs.
 	}
 
 	@Override
 	public List<Option> getDefaultOptions(ByteProvider provider, LoadSpec loadSpec,
-			DomainObject domainObject, boolean isLoadIntoProgram) {
-		List<Option> list =
-			super.getDefaultOptions(provider, loadSpec, domainObject, isLoadIntoProgram);
-
-		// TODO: If this loader has custom options, add them to 'list'
-		list.add(new Option("Option name goes here", "Default option value goes here"));
-
-		return list;
+			DomainObject domainObject, boolean isLoadIntoProgram, boolean isLoadIntoProgramMemory) {
+		return super.getDefaultOptions(provider, loadSpec, domainObject, isLoadIntoProgram,
+			isLoadIntoProgramMemory);
 	}
 
 	@Override
-	public String validateOptions(ByteProvider provider, LoadSpec loadSpec, List<Option> options) {
-
-		// TODO: If this loader has custom options, validate them here.  Not all options require
-		// validation.
-
-		return super.validateOptions(provider, loadSpec, options);
+	public String validateOptions(ByteProvider provider, LoadSpec loadSpec, List<Option> options,
+			Program program) {
+		return super.validateOptions(provider, loadSpec, options, program);
 	}
 }
