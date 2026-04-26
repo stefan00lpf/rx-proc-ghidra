@@ -7,7 +7,7 @@ most of the instructions supported by the RX62T processor.
 
 ## Installation
 
-`unzip ghidra_12.0.3_PUBLIC_20250415_RX62T.zip -d ${ghidra_install_dir}/Ghidra/Extensions`
+`unzip ghidra_12.0.4_PUBLIC_RX62T.zip -d ${ghidra_install_dir}/Ghidra/Extensions`
 
 ## Building
 
