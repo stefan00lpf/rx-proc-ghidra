@@ -471,11 +471,19 @@ nextreg: reg is reg0_4 = 14 [ reg = R15; ] { export R15; }
 	setResultFlags(reg0_4);
 }
 
-## ADD src,dst when memex == UB or src == Rs
-:ADD ld_src, reg0_4 is op2_6 = 0b10010 & ld0_2; reg0_4 ... & ld_src [ mode_ld = ld0_2; mode_mi = 0x4; ] {
+## ADD src,dst when memex == UB
+:ADD ld_src, reg0_4 is op2_6 = 0b10010 & ld0_2 < 0b11 & ld0_2; reg0_4 ... & ld_src [ mode_ld = ld0_2; mode_mi = 0x4; ] {
 	setAddFlags(ld_src, reg0_4);
 	setAddOverflowFlags(ld_src, reg0_4);
 	reg0_4 = reg0_4 + ld_src;
+	setResultFlags(reg0_4);
+}
+
+## ADD src,dst when src == Rs (register source uses full 32-bit value)
+:ADD reg4_4, reg0_4 is op2_6 = 0b10010 & ld0_2 = 0b11; reg0_4 & reg4_4 {
+	setAddFlags(reg4_4, reg0_4);
+	setAddOverflowFlags(reg4_4, reg0_4);
+	reg0_4 = reg0_4 + reg4_4;
 	setResultFlags(reg0_4);
 }
 
@@ -1377,7 +1385,7 @@ nextreg: reg is reg0_4 = 14 [ reg = R15; ] { export R15; }
 }
 
 ### when memex != UB
-:MUL ldu_src, reg0_4    is op0_8 = 0x06; mi6_2 & op2_4 = 0x3 & ld0_2 != 0b11 & ld0_2; reg0_4 ... & ldu_src [ mode_ld = ld0_2; mode_mi = mi6_2; ] {
+:MUL ldu_src, reg0_4    is op0_8 = 0x06; mi6_2 & op2_4 = 0x3 & ld0_2 != 0b11 & ld0_2; reg0_4 ... & ldu_src [ mode_ld = ld0_2; mode_mi = 2; ] {
     reg0_4 = reg0_4 * ldu_src;
 }
 
@@ -2246,12 +2254,11 @@ nextreg: reg is reg0_4 = 14 [ reg = R15; ] { export R15; }
     reg0_4 = liop;
 }
 
-# TODO: This has the same encoding as STNZ 2 in the manual!
 ### (2) STZ Rs, Rd
-#:STZ reg4_4, reg0_4    is op0_8 = 0xFC; op0_8 = 0x4B; reg4_4 & reg0_4 {
-#    if ($(Z_flag) == 0) goto inst_next;
-#    reg0_4 = reg4_4;
-#}
+:STZ reg4_4, reg0_4    is op0_8 = 0xFC; op0_8 = 0x4B; reg4_4 & reg0_4 {
+    if ($(Z_flag) == 0) goto inst_next;
+    reg0_4 = reg4_4;
+}
 
 
 ## SUB - subtraction without borrow p. 195
