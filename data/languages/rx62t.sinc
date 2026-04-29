@@ -327,6 +327,17 @@ ld_src: szld_src^szdsc    is mode_ld != 0x3 & szld_src & szdsc [ mode_sz = mode_
 ldu_src: szldu_src        is mode_ld = 0x3  & szldu_src         [ mode_sz = mode_mi; ] { build szldu_src; export szldu_src; }
 ldu_src: szldu_src^szdsc  is mode_ld != 0x3 & szldu_src & szdsc [ mode_sz = mode_mi; ] { build szldu_src; export szldu_src; }
 
+## MOVU uses memory source forms; when ld=3 it should be [Rs] (not Rs).
+movu_ldu_src: szldu_src        is mode_ld < 0x3 & szldu_src { build szldu_src; export szldu_src; }
+movu_ldu_src: [reg4_4]         is mode_ld = 0x3 & mode_sz = 0x0 & reg4_4 {
+	local tmp:4 = zext(*:1 reg4_4);
+	export tmp;
+}
+movu_ldu_src: [reg4_4]         is mode_ld = 0x3 & mode_sz = 0x1 & reg4_4 {
+	local tmp:4 = zext(*:2 reg4_4);
+	export tmp;
+}
+
 ## Memory infix version of LD destination operand with displacement that scales by size of data
 ld_dst: szld_dst          is mode_ld = 0x3  & szld_dst         [ mode_sz = mode_mi; ] { build szld_dst; export szld_dst; }
 ld_dst: szld_dst^szdsc    is mode_ld != 0x3 & szld_dst & szdsc [ mode_sz = mode_mi; ] { build szld_dst; export szld_dst; }
@@ -1324,9 +1335,9 @@ nextreg: reg is reg0_4 = 14 [ reg = R15; ] { export R15; }
 }
 
 ## (2) MOVU.B/W as L dsp[Rs], Rd
-:MOVU^szdsc szldu_src, reg0_4    is szdsc & op3_5 = 0b1011 & sz2_1 & ld0_2; reg0_4 ... & szldu_src [ mode_ld = ld0_2; mode_sz = sz2_1; ] {
-    build szldu_src;
-    reg0_4 = szldu_src;
+:MOVU^szdsc movu_ldu_src, reg0_4    is szdsc & op3_5 = 0b1011 & sz2_1 & ld0_2; reg0_4 ... & movu_ldu_src [ mode_ld = ld0_2; mode_sz = sz2_1; ] {
+    build movu_ldu_src;
+    reg0_4 = movu_ldu_src;
 }
 
 ## (3) MOVU.B/W as L [Ri,Rb], Rd
@@ -2222,7 +2233,7 @@ nextreg: reg is reg0_4 = 14 [ reg = R15; ] { export R15; }
 }
 
 ### (2) STNZ Rs, Rd
-:STNZ reg4_4, reg0_4    is op0_8 = 0xFC; op0_8 = 0x4B; reg4_4 & reg0_4 {
+:STNZ reg4_4, reg0_4    is op0_8 = 0xFC; op0_8 = 0x4F; reg4_4 & reg0_4 {
     if ($(Z_flag) == 1) goto inst_next;
     reg0_4 = reg4_4;
 }
