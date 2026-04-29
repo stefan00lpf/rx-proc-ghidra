@@ -1372,13 +1372,13 @@ nextreg: reg is reg0_4 = 14 [ reg = R15; ] { export R15; }
 
 ### (3) MUL dsp[Rs], Rd
 ### when memex == UB or src == Rs
-:MUL ld_src, reg0_4    is op2_6 = 0b10011 & ld0_2; reg0_4 ... & ld_src [ mode_ld = ld0_2; mode_mi = 4; ] {
-    reg0_4 = reg0_4 * ld_src;
+:MUL ldu_src, reg0_4    is op2_6 = 0b10011 & ld0_2; reg0_4 ... & ldu_src [ mode_ld = ld0_2; mode_mi = 2; ] {
+    reg0_4 = reg0_4 * ldu_src;
 }
 
 ### when memex != UB
-:MUL ld_src, reg0_4    is op0_8 = 0x06; mi6_2 & op2_4 = 0x3 & ld0_2 != 0b11 & ld0_2; reg0_4 ... & ld_src [ mode_ld = ld0_2; mode_mi = mi6_2; ] {
-    reg0_4 = reg0_4 * ld_src;
+:MUL ldu_src, reg0_4    is op0_8 = 0x06; mi6_2 & op2_4 = 0x3 & ld0_2 != 0b11 & ld0_2; reg0_4 ... & ldu_src [ mode_ld = ld0_2; mode_mi = mi6_2; ] {
+    reg0_4 = reg0_4 * ldu_src;
 }
 
 ### (4) MUL Rs, Rs2, Rd
